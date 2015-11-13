@@ -24,8 +24,10 @@ class SshAuth:
     #Creates the ssh_auth state
     keyCount = 0
     for key in publicKeys:
+      # check if a protocol is defined (like salt://, http://...)
+      keydef = {'source': key} if "://" in key else {"name": key}
       existingStates[user + "-pubkey-" + str(keyCount)] = {"ssh_auth.present": [{"user": user},
-                                                            {"source": key},
+                                                            keydef,
                                                             {"require": [{"user": user}]}]}
       keyCount += 1
 
