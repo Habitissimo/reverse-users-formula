@@ -37,11 +37,12 @@ class SshAuth:
     """Applies properly formatted ssh_auth state dictionaries to an existing dictionary
     containing user state data from the UserState class.
     """
-    if len(userState) > 0:
-      if userState.keys()[0] == "user.present":
-        for option in userState["user.present"]:
-          if option.keys()[0] == "public-keys":
-            self._generateStates(user, existingStates, option["public-keys"])
+    if not len(userState):
+      return
+
+    for option in userState.get("user.present", []):
+      if "public-keys" in option:
+        self._generateStates(user, existingStates, option["public-keys"])
 
 #Class for generating user states based on the contents of the users pillar
 class UserState:
@@ -72,7 +73,7 @@ class UserState:
 
     # Then process the regular userinfo options excluding what was in the match sections
     for option in userinfo:
-      if option.keys()[0] != overrideOption.keys()[0]:
+      if list(option.keys())[0] != list(overrideOption.keys())[0]:
         newUserList.append(option)
 
     return newUserList
